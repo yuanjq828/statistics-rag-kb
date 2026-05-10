@@ -189,14 +189,67 @@ def render_home():
         st.markdown(f"### 🔍 搜索结果：{query}")
         with st.spinner("正在检索知识库..."):
             from core.rag_engine import get_rag_engine
+            from data.concepts import get_concept_by_id
+            from data.exercises import EXERCISES
             engine = get_rag_engine()
-            results = engine.search(query, top_k=5)
 
-            if results:
-                for i, r in enumerate(results, 1):
-                    meta = r["metadata"]
-                    with st.expander(f"{i}. [{meta.get('type', '未知').upper()}] {meta.get('name', meta.get('title', r['id']))} (相似度: {r.get('score', 0):.2f})"):
-                        st.markdown(r["document"])
+            # 1. 搜索最相关的概念（Wiki 卡片）
+            concept_results = engine.search(query, top_k=3, doc_type="concept")
+            # 2. 搜索最相关的练习题
+            exercise_results = engine.search(query, top_k=3, doc_type="exercise")
+
+            if concept_results or exercise_results:
+                # ---- Wiki 卡片结果 ----
+                if concept_results:
+                    st.markdown("#### 📖 相关 Wiki 卡片")
+                    for i, r in enumerate(concept_results, 1):
+                        meta = r["metadata"]
+                        cid = meta.get("id")
+                        concept = get_concept_by_id(cid) if cid else None
+                        if concept:
+                            from data.knowledge_graph_data import CATEGORY_META
+                            cm = CATEGORY_META.get(concept["category"], {"color": "#667eea", "icon": "📄"})
+                            st.markdown(f"""
+                            <div style="background:white;border-radius:10px;padding:14px 18px;margin-bottom:10px;
+                                        box-shadow:0 1px 4px rgba(0,0,0,0.06);border-left:4px solid {cm['color']};">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <div>
+                                        <strong style="font-size:1.05rem;">{cm['icon']} {concept['name']}</strong>
+                                        <span style="color:#999;margin-left:8px;font-size:0.85rem;">{concept['name_en']}</span>
+                                    </div>
+                                    <span style="background:{cm['color']};color:white;padding:2px 10px;
+                                                border-radius:20px;font-size:0.75rem;">{concept['category']}</span>
+                                </div>
+                                <p style="margin:6px 0 0 0;color:#555;font-size:0.9rem;">{concept['summary'][:120]}{'...' if len(concept['summary'])>120 else ''}</p>
+                                <div style="margin-top:8px;">
+                                    <span style="color:#f59e0b;font-size:0.8rem;">{'⭐' * concept['difficulty']}</span>
+                                    <span style="margin-left:8px;color:#999;font-size:0.8rem;">相关度: {r['score']:.2f}</span>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                # ---- 练习题结果 ----
+                if exercise_results:
+                    st.markdown("#### ✏️ 相关练习题")
+                    for i, r in enumerate(exercise_results, 1):
+                        meta = r["metadata"]
+                        ex_id = meta.get("id")
+                        exercise = next((e for e in EXERCISES if e["id"] == ex_id), None)
+                        if exercise:
+                            cat_label = {"choice": "选择题", "calculation": "计算题", "essay": "论述题"}.get(exercise["category"], exercise["category"])
+                            st.markdown(f"""
+                            <div style="background:white;border-radius:10px;padding:14px 18px;margin-bottom:10px;
+                                        box-shadow:0 1px 4px rgba(0,0,0,0.06);border-left:4px solid #f59e0b;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;">
+                                    <strong style="font-size:0.95rem;">📝 {exercise['question'][:100]}{'...' if len(exercise['question'])>100 else ''}</strong>
+                                    <span style="background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:20px;font-size:0.75rem;">{cat_label}</span>
+                                </div>
+                                <div style="margin-top:6px;">
+                                    <span style="color:#f59e0b;font-size:0.8rem;">{'⭐' * exercise['difficulty']}</span>
+                                    <span style="margin-left:8px;color:#999;font-size:0.8rem;">相关度: {r['score']:.2f}</span>
+                                </div>
+                            </div>
+                            """, unsafe_allow_html=True)
             else:
                 st.warning("未找到相关结果，试试其他关键词？")
 
