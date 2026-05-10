@@ -7,6 +7,7 @@ import streamlit as st
 from data.concepts import CONCEPTS, get_concept_by_id, get_all_categories
 from data.knowledge_graph_data import CATEGORY_META
 from core.wiki_cards import search_concepts
+from core.rag_engine import get_rag_engine
 
 
 st.set_page_config(page_title="Wiki卡片", page_icon="📖", layout="wide")
@@ -19,11 +20,9 @@ def _wiki_to_streamlit(md_text: str) -> str:
     """将Wiki内容中的Markdown转为Streamlit友好的格式（无需un safe）"""
     if not md_text:
         return ""
-    # 标题: ## → ### 以减小字号
     text = md_text
     text = re.sub(r'^### (.+)$', r'##### \1', text, flags=re.MULTILINE)
     text = re.sub(r'^## (.+)$', r'#### \1', text, flags=re.MULTILINE)
-    # 表格 - 简单保留原样
     return text
 
 
@@ -35,11 +34,12 @@ def render_wiki_page():
     </div>
     """, unsafe_allow_html=True)
 
-    # 搜索栏
-    search_query = st.text_input(
-        "🔍 搜索概念（支持中文/英文/关键词）",
-        placeholder="例如：均值、正态分布、t-test...",
-        label_visibility="visible"
+    # ===== RAG 智能搜索栏（替代原有关键词搜索） =====
+    rag_query = st.text_input(
+        "🔍 RAG 智能搜索（语义理解，返回最相关概念）",
+        placeholder="例如：数据离散程度怎么衡量？、什么是中心极限定理...",
+        label_visibility="visible",
+        key="rag_wiki_search"
     )
 
     # 分类筛选
@@ -51,11 +51,27 @@ def render_wiki_page():
 
     st.markdown("---")
 
-    # 获取概念列表
-    if search_query:
-        concepts = search_concepts(search_query)
-        if not concepts:
-            st.warning(f"未找到与 '{search_query}' 相关的概念")
+    # ===== RAG 语义搜索（仅搜索概念类型，最多返回3个） =====
+    if rag_query:
+        with st.spinner("🔎 正在语义检索知识库..."):
+            engine = get_rag_engine()
+            rag_results = engine.search(rag_query, top_k=3, doc_type="concept")
+        if rag_results:
+            # 按相关性得分排序，取最多3个概念ID
+            concept_ids = []
+            seen = set()
+            for r in rag_results:
+                cid = r["metadata"].get("id")
+                if cid and cid not in seen:
+                    concept_ids.append(cid)
+                    seen.add(cid)
+                    if len(concept_ids) >= 3:
+                        break
+            concepts = [get_concept_by_id(cid) for cid in concept_ids if get_concept_by_id(cid)]
+            if concepts:
+                st.success(f"✨ RAG 找到 {len(concepts)} 个最相关概念")
+        else:
+            st.warning(f"未找到与 '{rag_query}' 相关的概念，显示全部")
             concepts = CONCEPTS
     else:
         concepts = CONCEPTS
@@ -76,11 +92,8 @@ def render_wiki_page():
 
     with left_col:
         st.markdown(f"**共 {len(concepts)} 个概念**")
-        # 显示概念列表（简约卡片）
         for c in concepts:
             meta = CATEGORY_META.get(c["category"], {"color": "#999", "icon": "📄"})
-            is_selected = st.session_state.get("selected_concept") == c["id"]
-
             if st.button(
                 f"{meta['icon']} {c['name']}  ({c['name_en']})",
                 key=f"btn_{c['id']}",
