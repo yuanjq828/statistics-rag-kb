@@ -1,0 +1,376 @@
+/* ===== 全局样式 ===== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ===== 侧边栏 ===== */
+.sidebar-header {
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.sidebar-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.sidebar-subtitle {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 0;
+}
+
+/* ===== Hero区域 ===== */
+.hero-section {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ===== 功能卡片 ===== */
+.feature-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+    border: 1px solid #f0f0f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
+    cursor: default;
+}
+
+.feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.feature-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+}
+
+.feature-card ul {
+    padding-left: 1rem;
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.feature-card ul li {
+    margin-bottom: 0.25rem;
+}
+
+/* ===== Wiki卡片 ===== */
+.wiki-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+}
+
+.wiki-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1rem;
+}
+
+.wiki-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.wiki-title-group {
+    flex: 1;
+}
+
+.wiki-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.wiki-en-name {
+    font-size: 0.9rem;
+    color: #999;
+    font-style: italic;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.wiki-badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 1rem;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.wiki-difficulty {
+    font-size: 0.85rem;
+    color: #f59e0b;
+}
+
+.wiki-summary {
+    background: #f8fafc;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid #667eea;
+    font-size: 0.95rem;
+    color: #444;
+}
+
+.wiki-description {
+    margin-bottom: 1rem;
+    color: #555;
+    line-height: 1.7;
+}
+
+.wiki-description p {
+    margin: 0.5rem 0 0 0;
+}
+
+.wiki-example {
+    background: #fffbeb;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border-left: 3px solid #f59e0b;
+    color: #555;
+}
+
+.wiki-example p {
+    margin: 0.5rem 0 0 0;
+}
+
+.formula {
+    background: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+}
+
+.wiki-content {
+    color: #444;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.wiki-content h4 {
+    color: #333;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #eee;
+}
+
+.wiki-content h5 {
+    color: #555;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
+}
+
+.wiki-content strong {
+    color: #333;
+}
+
+.wiki-content li {
+    margin-bottom: 0.3rem;
+}
+
+.wiki-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.9rem;
+}
+
+.wiki-table th {
+    background: #f3f4f6;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    border: 1px solid #e5e7eb;
+}
+
+.wiki-table td {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #e5e7eb;
+}
+
+.wiki-table tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+.wiki-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+}
+
+.tag {
+    background: #eef2ff;
+    color: #667eea;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.8rem;
+}
+
+/* ===== 简约卡片 ===== */
+.wiki-card-mini {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    transition: background 0.2s;
+}
+
+.wiki-card-mini:hover {
+    background: #f9fafb;
+}
+
+.wiki-card-mini-icon {
+    font-size: 1.5rem;
+}
+
+.wiki-card-mini-content {
+    flex: 1;
+}
+
+.wiki-card-mini-content strong {
+    display: block;
+    color: #333;
+}
+
+/* ===== 知识图谱 ===== */
+.graph-container {
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* ===== 案例卡片 ===== */
+.case-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 1.5rem;
+}
+
+.case-header {
+    margin-bottom: 1rem;
+}
+
+.case-field-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: #e0f2fe;
+    color: #0284c7;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* ===== 练习与测验 ===== */
+.exercise-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    margin-bottom: 1rem;
+    border: 1px solid #f0f0f0;
+}
+
+.quiz-header {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== 搜索高亮 ===== */
+.highlight {
+    background: #fef3c7;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 1.8rem;
+    }
+    .wiki-header {
+        flex-direction: column;
+    }
+}
+
+/* ===== Streamlit 组件覆盖 ===== */
+.stButton > button {
+    border-radius: 0.5rem !important;
+    font-weight: 500 !important;
+}
+
+.stSelectbox > div > div {
+    border-radius: 0.5rem !important;
+}
+
+div[data-testid="stExpander"] {
+    border-radius: 0.5rem !important;
+}
+
+/* 进度条美化 */
+.stProgress > div > div > div {
+    background: linear-gradient(90deg, #667eea, #764ba2) !important;
+}
