@@ -261,45 +261,27 @@ class RAGEngine:
         # 计算查询嵌入
         query_embedding = self._compute_embeddings([query])[0]
 
-        # 使用ChromaDB搜索（如果可用）
-        if self.collection is not None:
-            try:
-                where_filter = {"type": doc_type} if doc_type else None
-                results = self.collection.query(
-                    query_embeddings=[query_embedding.tolist()],
-                    n_results=min(top_k * 2, len(self.documents)),
-                    where=where_filter
-                )
-                # 解析结果
-                search_results = []
-                if results and results["ids"][0]:
-                    for i, doc_id in enumerate(results["ids"][0]):
-                        search_results.append({
-                            "id": doc_id,
-                            "score": results["distances"][0][i] if results.get("distances") else 0,
-                            "document": results["documents"][0][i],
-                            "metadata": results["metadatas"][0][i] if results.get("metadatas") else {}
-                        })
-                return search_results
-            except Exception:
-                pass  # 回退到本地搜索
-
-        # 本地余弦相似度搜索
+        # 本地余弦相似度搜索（始终使用，避免chromadb兼容问题）
         doc_embeddings = self._compute_embeddings(self.documents)
         scores = np.dot(doc_embeddings, query_embedding)
 
-        # 获取top_k结果
-        top_indices = np.argsort(scores)[::-1][:top_k]
+        # 按分数排序
+        sorted_indices = np.argsort(scores)[::-1]
 
         results = []
-        for idx in top_indices:
+        for idx in sorted_indices:
             if idx < len(self.document_ids):
-                results.append({
-                    "id": self.document_ids[idx],
-                    "score": float(scores[idx]),
-                    "document": self.documents[idx][:500] + "...",
-                    "metadata": self.document_metadata[idx]
-                })
+                meta = self.document_metadata[idx]
+                # 按类型过滤
+                if doc_type is None or meta.get("type") == doc_type:
+                    results.append({
+                        "id": self.document_ids[idx],
+                        "score": float(scores[idx]),
+                        "document": self.documents[idx][:500] + "...",
+                        "metadata": meta
+                    })
+                    if len(results) >= top_k:
+                        break
 
         return results
 
