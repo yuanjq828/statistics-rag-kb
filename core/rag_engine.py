@@ -16,12 +16,9 @@ try:
 except ImportError:
     _HAS_SENTENCE_TRANSFORMERS = False
 
-try:
-    import chromadb
-    from chromadb.config import Settings
-    _HAS_CHROMADB = True
-except ImportError:
-    _HAS_CHROMADB = False
+# chromadb 有 protobuf 兼容性问题，延迟到 initialize_chroma() 中导入
+_HAS_CHROMADB = False
+_HAS_CHROMADB_IMPORT_ERROR = None
 
 
 # 缓存目录
@@ -186,9 +183,22 @@ class RAGEngine:
         return self._compute_embeddings_simple(texts)
 
     def initialize_chroma(self, persist_directory: str = None):
-        """初始化ChromaDB（可选）"""
-        if not _HAS_CHROMADB:
+        """初始化ChromaDB（可选，延迟导入避免protobuf兼容性问题）"""
+        global _HAS_CHROMADB, _HAS_CHROMADB_IMPORT_ERROR
+
+        if _HAS_CHROMADB:
+            pass  # 已确认可用
+        elif _HAS_CHROMADB_IMPORT_ERROR:
             return False
+        else:
+            try:
+                import chromadb
+                from chromadb.config import Settings
+                _HAS_CHROMADB = True
+            except Exception as e:
+                _HAS_CHROMADB = False
+                _HAS_CHROMADB_IMPORT_ERROR = str(e)
+                return False
 
         if persist_directory is None:
             persist_directory = os.path.join(CACHE_DIR, "chromadb")
@@ -196,6 +206,8 @@ class RAGEngine:
         os.makedirs(persist_directory, exist_ok=True)
 
         try:
+            import chromadb
+            from chromadb.config import Settings
             self.chroma_client = chromadb.Client(Settings(
                 persist_directory=persist_directory,
                 anonymized_telemetry=False
